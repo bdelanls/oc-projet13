@@ -1,0 +1,29 @@
+.modal {
+    
+    &-overlay {
+    position: absolute;
+    padding-top: 3em;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(18, 0, 43, .8);
+    }
+
+    &-close {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-weight: 700;
+        font-size: 1rem;
+        color: gray;
+
+        &:hover {
+            color: black;
+        }
+    }
+
+}
