@@ -28,7 +28,8 @@ const authSlice = createSlice({
   initialState: {
     token: null,
     status: 'idle',
-    error: null
+    error: null,
+    user: null
   },
   reducers: {
     logout: (state) => {
@@ -37,7 +38,10 @@ const authSlice = createSlice({
       sessionStorage.removeItem('token')
     },
     resetError: (state) => {
-    state.error = null
+      state.error = null
+    },
+    setUser: (state, action) => {
+      state.user = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -57,6 +61,6 @@ const authSlice = createSlice({
   }
 })
 
-export const { logout, resetError } = authSlice.actions
+export const { logout, resetError, setUser } = authSlice.actions
 
 export default authSlice.reducer
