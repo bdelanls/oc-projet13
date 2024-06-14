@@ -1,43 +1,62 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import authAPI from '../../api/auth'
 
-const API_URL = 'http://localhost:3001/api/v1'
+// Thunk pour la connexion
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async ({ email, password, rememberMe }, { rejectWithValue }) => {
+    try {
+      const data = await authAPI.login(email, password)
+      const { token } = data.body
 
-export const loginUser = createAsyncThunk('auth/loginUser', async (credentials) => {
-  const response = await axios.post(`${API_URL}/user/login`, credentials)
-  return response.data
-})
+      // Stocker le token
+      if (rememberMe) {
+        localStorage.setItem('token', token)
+      } else {
+        sessionStorage.setItem('token', token)
+      }
 
-export const authSlice = createSlice({
+      return token
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
     token: null,
     status: 'idle',
     error: null
   },
   reducers: {
     logout: (state) => {
-      state.user = null
       state.token = null
+      localStorage.removeItem('token')
+      sessionStorage.removeItem('token')
+    },
+    resetError: (state) => {
+    state.error = null
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state) => {
         state.status = 'loading'
+        state.error = null
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.token = action.payload.token
-        state.user = action.payload.user
+        state.token = action.payload
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed'
-        state.error = action.error.message
+        state.error = action.payload
       })
   }
 })
 
-export const { logout } = authSlice.actions
+export const { logout, resetError } = authSlice.actions
+
 export default authSlice.reducer
