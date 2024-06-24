@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 import { logout, setUser } from '../../features/auth/authSlice'
 import './Header.scss'
 import Logo from '../../assets/img/argentBankLogo.png'
@@ -13,18 +14,16 @@ function Header() {
 
   useEffect(() => {
     if (token && !user) {
-      // Appeler une API pour obtenir les informations de l'utilisateur
+      // Appeler l'API pour obtenir les informations de l'utilisateur
       const fetchUser = async () => {
         try {
-          const response = await fetch('http://localhost:3001/api/v1/user/profile', {
-            method: 'POST',
+          const response = await axios.post('http://localhost:3001/api/v1/user/profile', {}, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
             }
           })
-          const data = await response.json()
-          dispatch(setUser(data.body))
+          dispatch(setUser(response.data.body))
         } catch (error) {
           console.error('Failed to fetch user', error)
         }
