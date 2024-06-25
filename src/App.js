@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -39,7 +39,7 @@ function App() {
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/profile' element={<PrivateRoute element={<ProfilePage />} />} />
-          {/* <Route path='*' element={<HomePage />} /> */}
+          <Route path='*' element={<Navigate to="/" />} />
         </Routes>
         <Modal isOpen={isModalOpen} onClose={closeModalHandler}>
           <LoginForm />

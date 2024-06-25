@@ -1,0 +1,15 @@
+.edit-form {
+
+    .input-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+        width: 80%;
+        margin: 7px auto 0 auto;
+
+        input {
+            max-width: 46%;
+        }
+    }
+}

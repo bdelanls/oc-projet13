@@ -1,50 +1,74 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { produce } from 'immer'
+import profileAPI from './profileAPI'
 
-const API_URL = 'http://localhost:3001/api/v1'
-
-export const fetchUserProfile = createAsyncThunk('profile/fetchUserProfile', async (token) => {
-  const response = await axios.post(`${API_URL}/user/profile`, {}, {
-    headers: {
-      Authorization: `Bearer ${token}`
+export const fetchUserProfile = createAsyncThunk(
+  'profile/fetchUserProfile',
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await profileAPI.getProfile(token)
+      return response.body
+    } catch (error) {
+      return rejectWithValue(error.message)
     }
-  })
-  return response.data
-})
+  }
+)
 
-export const updateUserProfile = createAsyncThunk('profile/updateUserProfile', async ({ token, userData }) => {
-  const response = await axios.put(`${API_URL}/user/profile`, userData, {
-    headers: {
-      Authorization: `Bearer ${token}`
+export const updateProfile = createAsyncThunk(
+  'profile/updateProfile',
+  async ({ firstName, lastName, token }, { rejectWithValue }) => {
+    try {
+      const response = await profileAPI.updateProfile(token, { firstName, lastName })
+      return response.body
+    } catch (error) {
+      return rejectWithValue(error.message)
     }
-  })
-  return response.data
-})
+  }
+)
 
-export const profileSlice = createSlice({
+const profileSlice = createSlice({
   name: 'profile',
   initialState: {
-    userInfo: null,
+    user: null,
     status: 'idle',
     error: null
+  },
+  reducers: {
+    clearProfile: (state) => {
+      state.user = null
+    }
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserProfile.pending, (state) => {
         state.status = 'loading'
+        state.error = null
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.userInfo = action.payload
+        state.user = action.payload
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.status = 'failed'
-        state.error = action.error.message
+        state.error = action.payload
       })
-      .addCase(updateUserProfile.fulfilled, (state, action) => {
-        state.userInfo = { ...state.userInfo, ...action.payload }
+      .addCase(updateProfile.pending, (state) => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        return produce(state, draft => {
+          draft.status = 'succeeded'
+          draft.user = action.payload
+        })
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.payload
       })
   }
 })
+
+export const { clearProfile } = profileSlice.actions
 
 export default profileSlice.reducer

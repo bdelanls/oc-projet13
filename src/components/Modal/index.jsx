@@ -16,9 +16,9 @@ function Modal({ isOpen, onClose, children }) {
   )
 }
 
+// Définition des types de props pour le composant Modal
 Modal.propTypes = {
-  isOpen:
-  PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired
 }

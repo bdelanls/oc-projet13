@@ -7,6 +7,11 @@ import './Header.scss'
 import Logo from '../../assets/img/argentBankLogo.png'
 import { openModal } from '../../features/modal/modalSlice'
 
+/**
+ * Composant header avec le logo, la navigation et l'authentification
+ * 
+ * @returns {JSX}
+ */
 function Header() {
   const dispatch = useDispatch()
   const token = useSelector((state) => state.auth.token)
@@ -32,6 +37,9 @@ function Header() {
     }
   }, [token, user, dispatch])
 
+  /**
+   * Gère la déconnexion de l'utilisateur
+   */
   const handleLogout = () => {
     dispatch(logout())
   }
