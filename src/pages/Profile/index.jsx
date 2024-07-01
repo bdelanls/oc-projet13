@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import AccountCard from '../../components/AccountCard'
 import accountsData from '../../data/accountsData'
-import { updateProfile, fetchUserProfile } from '../../features/profile/profileSlice'
+import { updateProfile, fetchUserProfile } from '../../features/auth/authSlice'
 import './style.scss'
 
 
@@ -38,6 +38,14 @@ function ProfilePage() {
         setIsEditing(false)
     }
 
+    const handleCancel = () => {
+        if (user) {
+          setFirstName(user.firstName)
+          setLastName(user.lastName)
+        }
+        setIsEditing(false)
+    }
+
 
     return (
         <>
@@ -64,7 +72,10 @@ function ProfilePage() {
                 />
                 </div>
                 </h1>
-                <button type="submit" className="edit-button">Submit</button>
+                <div className='btn-edit'>
+                    <button type="submit" className="edit-button">Save</button>
+                    <button type="button" className="edit-button" onClick={handleCancel}>Cancel</button>
+                </div>
             </form>
         ) : (
             <>

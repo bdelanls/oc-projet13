@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authAPI from '../../api/auth'
+import profileAPI from '../profile/profileAPI'
 
 // Thunk pour la connexion
 export const loginUser = createAsyncThunk(
@@ -23,6 +24,32 @@ export const loginUser = createAsyncThunk(
   }
 )
 
+// Thunk pour récupérer le profil utilisateur
+export const fetchUserProfile = createAsyncThunk(
+  'auth/fetchUserProfile',
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await profileAPI.getProfile(token)
+      return response.body
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+// Thunk pour mettre à jour le profil utilisateur
+export const updateProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async ({ firstName, lastName, token }, { rejectWithValue }) => {
+    try {
+      const response = await profileAPI.updateProfile(token, { firstName, lastName })
+      return response.body
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -34,6 +61,7 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.token = null
+      state.user = null
       localStorage.removeItem('token')
       sessionStorage.removeItem('token')
     },
@@ -42,6 +70,9 @@ const authSlice = createSlice({
     },
     setUser: (state, action) => {
       state.user = action.payload
+    },
+    setToken: (state, action) => {
+      state.token = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -58,9 +89,33 @@ const authSlice = createSlice({
         state.status = 'failed'
         state.error = action.payload
       })
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        state.user = action.payload
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.payload
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        state.user = action.payload
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.payload
+      })
   }
 })
 
-export const { logout, resetError, setUser } = authSlice.actions
+export const { logout, resetError, setUser, setToken } = authSlice.actions
 
 export default authSlice.reducer
