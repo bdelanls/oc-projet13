@@ -1,6 +1,15 @@
 import PropTypes from 'prop-types'
 import './Modal.scss'
 
+/**
+ * Modal component for user authentication.
+ * 
+ * @param {Object} props - The component props.
+ * @param {boolean} props.isOpen - Determines if the modal is open.
+ * @param {Function} props.onClose - Function to call when the modal is closed.
+ * @param {React.ReactNode} props.children - The content of the modal.
+ * @returns {JSX.Element|null} The rendered modal component or null if not open.
+ */
 function Modal({ isOpen, onClose, children }) {
   if (!isOpen) return null
 
@@ -16,7 +25,7 @@ function Modal({ isOpen, onClose, children }) {
   )
 }
 
-// Définition des types de props pour le composant Modal
+// Define prop types for the Modal component
 Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,

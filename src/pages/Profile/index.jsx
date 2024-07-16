@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import AccountCard from '../../components/AccountCard'
 import accountsData from '../../data/accountsData'
-import { updateProfile, fetchUserProfile } from '../../features/auth/authSlice'
+import { updateProfile, fetchUserProfile } from '../../features/profile/profileSlice'
 import './style.scss'
 
-
+/**
+ * ProfilePage component
+ * Displays the user's profile page, allowing for profile editing and displaying account information.
+ * 
+ * @returns {JSX.Element} The rendered profile page component
+ */
 function ProfilePage() {
     const dispatch = useDispatch()
     const user = useSelector((state) => state.profile.user)
@@ -15,12 +20,14 @@ function ProfilePage() {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
 
+    // Fetch user profile when the component mounts or the token changes
     useEffect(() => {
         if (token) {
         dispatch(fetchUserProfile(token))
         }
     }, [dispatch, token])
 
+    // Update local state when the user profile is fetched
     useEffect(() => {
         if (user) {
         setFirstName(user.firstName)
@@ -28,16 +35,27 @@ function ProfilePage() {
         }
     }, [user])
 
+    /**
+     * Handle the click on the edit button
+     */
     const handleEditClick = () => {
         setIsEditing(true)
     }
 
+    /**
+     * Handle the submission of the profile update form
+     * 
+     * @param {Event} e - The form submission event
+     */
     const handleSubmit = (e) => {
         e.preventDefault()
         dispatch(updateProfile({ firstName, lastName, token }))
         setIsEditing(false)
     }
 
+    /**
+     * Handle the click on the cancel button to reset form and exit editing mode
+     */
     const handleCancel = () => {
         if (user) {
           setFirstName(user.firstName)

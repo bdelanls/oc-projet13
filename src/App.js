@@ -9,10 +9,17 @@ import Modal from './components/Modal'
 import LoginForm from './components/LoginForm'
 import PrivateRoute from './components/PrivateRoute'
 import { closeModal } from './features/modal/modalSlice'
-import { resetError, setToken, setUser } from './features/auth/authSlice'
+import { resetError, setToken } from './features/auth/authSlice'
+import { setUser } from './features/profile/profileSlice'
 import axios from 'axios'
 import './styles/main.scss'
 
+/**
+ * Main application component
+ * Manages routing, modal visibility, and authentication state
+ * 
+ * @returns {JSX.Element} The rendered App component
+ */
 function App() {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(true)
@@ -20,6 +27,7 @@ function App() {
   const isAuthenticated = useSelector((state) => state.auth.token)
   const location = useLocation()
 
+  // Check for token in localStorage or sessionStorage and fetch user profile if token exists
   useEffect(() => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token')
     if (token) {
@@ -45,20 +53,23 @@ function App() {
     }
   }, [dispatch])
 
+  // Close the modal and reset errors when the modal is closed
   const closeModalHandler = () => {
     dispatch(closeModal())
     dispatch(resetError())
   }
 
+  // Close the modal if the user is authenticated
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(closeModal())
     }
   }, [isAuthenticated, dispatch])
 
-  // Condition pour ajouter la classe bg-dark
+  // Determine if the background should be dark
   const isDarkBackground = location.pathname !== '/' || isModalOpen
 
+  // Show loading indicator while fetching user data
   if (loading) {
     return <div>Loading...</div>
   }

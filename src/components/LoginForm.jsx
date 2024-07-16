@@ -3,6 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../features/auth/authSlice'
 
+/**
+ * LoginForm component for user authentication.
+ * 
+ * @returns {JSX.Element} The rendered login form component.
+ */
 function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -11,6 +16,7 @@ function LoginForm() {
   const { error, status, token } = useSelector((state) => state.auth)
   const navigate = useNavigate()
 
+  // Handle form submission for login.
   const handleSubmit = (e) => {
     e.preventDefault()
     dispatch(loginUser({ email, password, rememberMe }))

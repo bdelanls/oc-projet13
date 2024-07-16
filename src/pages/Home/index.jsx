@@ -2,6 +2,12 @@ import featuresData from '../../data/featuresData'
 import Feature from '../../components/Feature'
 import './style.scss'
 
+/**
+ * HomePage component
+ * Displays the homepage with promotional content and features
+ * 
+ * @returns {JSX.Element} The rendered homepage component
+ */
 function HomePage() {
 
 

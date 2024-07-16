@@ -142,37 +142,6 @@ paths:
           description: Transaction not found
         '500':
           description: Internal Server Error
-    delete:
-      security:
-        - Bearer: []
-      tags:
-        - Transactions
-      summary: Delete a specific transaction
-      description: Deletes an existing transaction
-      parameters:
-        - in: header
-          name: Authorization
-          schema:
-            type: string
-          required: true
-          description: Attach Bearer JWT token
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Transaction ID
-      responses:
-        '200':
-          description: Transaction deleted successfully
-        '400':
-          description: Invalid Fields
-        '401':
-          description: Unauthorized due to missing or invalid token
-        '404':
-          description: Transaction not found
-        '500':
-          description: Internal Server Error
 
 components:
   securitySchemes:

@@ -1,8 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authAPI from '../../api/auth'
-import profileAPI from '../profile/profileAPI'
 
-// Thunk pour la connexion
+/**
+ * Thunk for user login.
+ * Sends a login request to the API and stores the token in either 
+ * localStorage or sessionStorage based on the user's preference.
+ */
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({ email, password, rememberMe }, { rejectWithValue }) => {
@@ -10,7 +13,7 @@ export const loginUser = createAsyncThunk(
       const data = await authAPI.login(email, password)
       const { token } = data.body
 
-      // Stocker le token
+      // Store the token
       if (rememberMe) {
         localStorage.setItem('token', token)
       } else {
@@ -24,53 +27,31 @@ export const loginUser = createAsyncThunk(
   }
 )
 
-// Thunk pour récupérer le profil utilisateur
-export const fetchUserProfile = createAsyncThunk(
-  'auth/fetchUserProfile',
-  async (token, { rejectWithValue }) => {
-    try {
-      const response = await profileAPI.getProfile(token)
-      return response.body
-    } catch (error) {
-      return rejectWithValue(error.message)
-    }
-  }
-)
-
-// Thunk pour mettre à jour le profil utilisateur
-export const updateProfile = createAsyncThunk(
-  'auth/updateProfile',
-  async ({ firstName, lastName, token }, { rejectWithValue }) => {
-    try {
-      const response = await profileAPI.updateProfile(token, { firstName, lastName })
-      return response.body
-    } catch (error) {
-      return rejectWithValue(error.message)
-    }
-  }
-)
-
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
     token: null,
     status: 'idle',
-    error: null,
-    user: null
+    error: null
   },
   reducers: {
+    /**
+     * Logs out the user by removing the token and user data from the state and from local/session storage.
+     */
     logout: (state) => {
       state.token = null
-      state.user = null
       localStorage.removeItem('token')
       sessionStorage.removeItem('token')
     },
+    /**
+     * Resets errors in the auth state.
+     */
     resetError: (state) => {
       state.error = null
     },
-    setUser: (state, action) => {
-      state.user = action.payload
-    },
+    /**
+     * Sets the token in the auth state.
+     */
     setToken: (state, action) => {
       state.token = action.payload
     }
@@ -89,33 +70,9 @@ const authSlice = createSlice({
         state.status = 'failed'
         state.error = action.payload
       })
-      .addCase(fetchUserProfile.pending, (state) => {
-        state.status = 'loading'
-        state.error = null
-      })
-      .addCase(fetchUserProfile.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.user = action.payload
-      })
-      .addCase(fetchUserProfile.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.payload
-      })
-      .addCase(updateProfile.pending, (state) => {
-        state.status = 'loading'
-        state.error = null
-      })
-      .addCase(updateProfile.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.user = action.payload
-      })
-      .addCase(updateProfile.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.payload
-      })
   }
 })
 
-export const { logout, resetError, setUser, setToken } = authSlice.actions
+export const { logout, resetError, setToken } = authSlice.actions
 
 export default authSlice.reducer

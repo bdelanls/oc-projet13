@@ -2,24 +2,25 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { logout, setUser } from '../../features/auth/authSlice'
+import { logout } from '../../features/auth/authSlice'
+import { setUser } from '../../features/profile/profileSlice'
 import './Header.scss'
 import Logo from '../../assets/img/argentBankLogo.png'
 import { openModal } from '../../features/modal/modalSlice'
 
 /**
- * Composant header avec le logo, la navigation et l'authentification
+ * Header component with logo, navigation, and authentication functionality.
  * 
- * @returns {JSX}
+ * @returns {JSX.Element} The rendered header component.
  */
 function Header() {
   const dispatch = useDispatch()
   const token = useSelector((state) => state.auth.token)
-  const user = useSelector((state) => state.auth.user)
+  const user = useSelector((state) => state.profile.user)
 
   useEffect(() => {
     if (token && !user) {
-      // Appeler l'API pour obtenir les informations de l'utilisateur
+      // Fetch the user information from the API
       const fetchUser = async () => {
         try {
           const response = await axios.post('http://localhost:3001/api/v1/user/profile', {}, {
@@ -38,7 +39,7 @@ function Header() {
   }, [token, user, dispatch])
 
   /**
-   * Gère la déconnexion de l'utilisateur
+   * Handle user logout
    */
   const handleLogout = () => {
     dispatch(logout())
